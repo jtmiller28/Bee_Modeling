@@ -58,6 +58,34 @@ S.simu <- NaN*tset; S.simu[1] <- S0
 E.simu <- NaN*tset; E.simu[1] <- E0
 D.simu <- NaN*tset; D.simu[1] <- D0
 
+# For each time step
+for(i in 2:length(tset)){
+  
+  # Calc the change in time
+  dt <- tset[i] - tset[i-1]
+  
+  # Store placeholder variables
+  G <- G.simu[i-1]
+  S <- S.simu[i-1]
+  E <- E.simu[i-1]
+  D <- D.simu[i-1]
+  
+  # Calc the change in pollen, bees, and plants 
+  
+  dN <- (D*phi - ((Ug*N*G + Us*N*S)/(1 + Ug*hg*N + Us*hs*N)))dt
+  
+  dA <- (E*phi - (Ug*A*G/(1 + Ug*hg*A)))dt
+  
+  dG <- ((Ug*N*G/(1 + Ug*hg*N)) +(Ug*A*G/(1 + Ug*hg*A)) - mg*G)dt
+  
+  dS <- ((Ug*N*S/(1 + Us*hs*N)) - ms*S)dt
+  
+  dE <- ((rmax_e(min(1, G/x))) * ((Ke - E - alpha*D)/Ke))dt 
+  
+  dD <- ((rmax_d(min(1, (delta*S + G)/x)))*(Kd - D - beta*))
+  
+  
+} # End of for loop
 
 ```
 
