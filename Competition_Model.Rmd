@@ -1,0 +1,19 @@
+---
+title: "Competition_Model"
+author: "JT_Miller"
+date: "4/12/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Proposed question: Can we model competition between specialist and generalist bees on pollen resource?
+
+#### Things I want to incorporate in the model
+
+      1) Generalist bees are polylectic, and therefore are able to utilize multiple flower types for pollen extraction
+      2) Specialist bees are monolectic, and therefore will only be able to utilize a singular flower type for pollen extraction
+      3) Generalist will be more "clumsy" at pollen extraction, meaning that per time step, they extract less pollen then their specialist competitors. 
+      
