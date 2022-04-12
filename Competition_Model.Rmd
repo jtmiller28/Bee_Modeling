@@ -17,3 +17,48 @@ knitr::opts_chunk$set(echo = TRUE)
       2) Specialist bees are monolectic, and therefore will only be able to utilize a singular flower type for pollen extraction
       3) Generalist will be more "clumsy" at pollen extraction, meaning that per time step, they extract less pollen then their specialist competitors. 
       
+
+```{r}
+# Load in some libraries
+library(tidyverse)
+```
+```{r}
+# Define the parameters
+phi <- # The conversion of pollen to bees
+Ug <-  # The uptake rate of pollen for generalist bees
+Us <-  # The uptake rate of pollen for specialist bees
+hg <-  # The handling time of pollen for generalist (how long to take it back to brood)
+hs <-  # The handling time of pollen for specialist (how long to take it back to brood)
+mg <-   # The mortality of the generalist bees
+ms <- # The mortality of the specialist bees
+rmax_e <- # The maximum reproductive rate potential of the Exotic plant 
+rmax_d <- # The maximum reproductive rate potential of the Native plant
+delta <- # A proportion of YS that makes plants based upon pollen yield
+Ke <- # The carrying capacity of the exotic plants 
+Kd <- # The carrying capacity of the native plants 
+alpha <- # competition coefficient of D’s effect on E
+beta <- # competition coefficient of E’s effect on D
+x <- # required number of pollen grains to have max reproduction. 
+  
+# Define the initial conditions 
+G0 <- 100 # Initial population of generalist bees
+S0 <- 100 # Initial population of specialist bees
+E0 <- 10000 # Initial population of Exotic plants
+D0 <- 10000 # Initial population of Native plants
+```
+
+```{r}
+### The Model 
+
+tset <- seq(from = 0, to = 10000, length.out = 10000) # Create a vector of time steps
+
+# Create a holding vector and fill the initial conditions 
+G.simu <- NaN*tset; G.simu[1] <- G0
+S.simu <- NaN*tset; S.simu[1] <- S0
+E.simu <- NaN*tset; E.simu[1] <- E0
+D.simu <- NaN*tset; D.simu[1] <- D0
+
+
+```
+
+      
