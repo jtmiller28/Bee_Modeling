@@ -24,29 +24,33 @@ library(tidyverse)
 ```
 ```{r}
 # Define the parameters
-phi <- 100 # The conversion of flowers to pollen 
-Ug <- 1000 # The uptake rate of pollen for generalist bees
-Us <- 2000 # The uptake rate of pollen for specialist bees
-hg <- 10 # The handling time of pollen for generalist (how long to take it back to brood)
-hs <- 10 # The handling time of pollen for specialist (how long to take it back to brood)
+phi <- 10 # The conversion of flowers to pollen 
+Ug <- 0.01 # The uptake rate of pollen for generalist bees
+Us <- 0.02 # The uptake rate of pollen for specialist bees
+hg <- 0.01 # The handling time of pollen for generalist (how long to take it back to brood)
+hs <- 0.01 # The handling time of pollen for specialist (how long to take it back to brood)
 mg <- 0.01  # The mortality of the generalist bees
 ms <- 0.01  # The mortality of the specialist bees
-rmax_e <- 0.05 # The maximum reproductive rate potential of the Exotic plant 
-rmax_d <- 0.05 # The maximum reproductive rate potential of the Native plant
+rmax_e <- 0.01 # The maximum reproductive rate potential of the Exotic plant 
+rmax_d <- 0.01 # The maximum reproductive rate potential of the Native plant
 delta <- 2 # A proportion of YS that makes plants based upon pollen yield
-Ke <- 20000 # The carrying capacity of the exotic plants 
-Kd <- 20000 # The carrying capacity of the native plants 
-alpha <- 0.01 # competition coefficient of D’s effect on E
-beta <- 0.01  # competition coefficient of E’s effect on D
-x <- 10000 # required number of pollen grains to have max reproduction. 
-Yg <- 10000   # The yield conversion of generalist bees to pollen
-Ys <- 10000  # The yield conversion of specialist bees to pollen
+Ke <- 100 # The carrying capacity of the exotic plants 
+Kd <- 100 # The carrying capacity of the native plants 
+alpha <- 0.05 # competition coefficient of D’s effect on E
+beta <- 0.05  # competition coefficient of E’s effect on D
+x <- 1000 # required number of pollen grains to have max reproduction. 
+Yg <- 100000000   # The yield conversion of generalist bees to pollen
+Ys <- 100000000  # The yield conversion of specialist bees to pollen
+
 # Define the initial conditions 
-G0 <- 100 # Initial population of generalist bees
-S0 <- 100 # Initial population of specialist bees
-E0 <- 10000 # Initial population of Exotic plants
-D0 <- 10000 # Initial population of Native plants
+G0 <- 1 # Initial population of generalist bees
+S0 <- 1 # Initial population of specialist bees
+E0 <- 2 # Initial population of Exotic plants
+D0 <- 2 # Initial population of Native plants
+A0 <- E0 * 1/phi # Initial amount of alien pollen
+N0 <- D0 * 1/phi # Initial amount of native pollen 
 ```
+
 
 ```{r}
 ### The Model 
@@ -58,37 +62,69 @@ G.simu <- NaN*tset; G.simu[1] <- G0
 S.simu <- NaN*tset; S.simu[1] <- S0
 E.simu <- NaN*tset; E.simu[1] <- E0
 D.simu <- NaN*tset; D.simu[1] <- D0
+A.simu <- NaN*tset; A.simu[1] <- A0
+N.simu <- NaN*tset; N.simu[1] <- N0
 
 # For each time step
 for(i in 2:length(tset)){
   
-  # Calc the change in time
-  dt <- tset[i] - tset[i-1]
+  # Calc change in time
+  dt <- tset[i]-tset[i-1]
   
-  # Store placeholder variables
-  G <- G.simu[i-1]
-  S <- S.simu[i-1]
-  E <- E.simu[i-1]
-  D <- D.simu[i-1]
-  
-  # Calc the change in pollen, bees, and plants 
-  
- 
-  
-  dG <- ((G(Ug*A + Ug*N))/(1 + Ug*hg*N + Ug*hg*A) - mg*G)*dt
-  
-  dS <- ((Us*N*S/(1 + Us*hs*N)) - ms*S)*dt
-  
-  dE <- ((rmax_e(min(1, G/x))) * ((Ke - E - alpha*D)/Ke))*dt 
-  
-  dD <- ((rmax_d(min(1, (delta*S + G)/x)))*((Kd - D - beta*E)/Kd))*dt
-   dN <- (D*phi - (1/Yg)*((Ug*N*G)/(1 + Ug*hg*N + Ug*hg*A)) - (1/Ys)*((Us*N*S)/(1 + Us*hs*N)))*dt 
-  
-   dA <- (E*phi - (1/Yg)*(Ug*A*G/(1 + Ug*hg*N + Ug*hg*A)))*dt
-  
-  
+  # store placeholder variables
+	N <- N.simu[i-1]
+	A <- A.simu[i-1]
+	G <- G.simu[i-1]
+	S <- S.simu[i-1]
+	E <- E.simu[i-1]
+	D <- D.simu[i-1]
+	
+	# Calc the pollens
+	dN <- (D*phi - (1/Yg)*((Ug*N*G)/(1 + Ug*hg*N + Ug*hg*A)) - (1/Ys)*((Us*N*S)/(1+Us*hs*N)))*dt
+	
+	dA <- (E*phi - (1/Yg)*((Ug*A*G)/(1 + Ug*hg*N + Ug*hg*A)))*dt
+	
+	# Calc the bees
+	dG <- ((G*(Ug*A + Ug*N)/(1 + Ug*hg*N + Ug*hg*A)) - mg*G)*dt
+	dS <- (((Us*N*S)/(1+Us*hs*N)) - ms*S)*dt
+	
+	# Calc the plants
+	dE <- (rmax_e*(min(1, G/x)) * ((Ke - E - alpha*D)/Ke))*dt
+	dD <- (rmax_d*(min(1, (delta*S + G)/x))*((Kd - D - beta*E)/Kd))*dt
+	
+	# Calc totals 
+	N.simu[i] <- N + dN
+	A.simu[i] <- A + dA
+	G.simu[i] <- G + dG
+	S.simu[i] <- S + dS
+	E.simu[i] <- E + dE
+	D.simu[i] <- D + dD
+	
 } # End of for loop
+
+# Plot it out
+plot(x = tset, y = N.simu,
+     type = 'l', las = 1, lwd = 1, col = "green",
+     xlab = "time", ylab="Amount",
+     ylim = c(0, 10000))
+lines(x = tset, y = A.simu,
+      lwd = 2, col = "yellow")
+# Plot bees
+lines(x = tset, y = G.simu,
+      lwd = 2, col = "blue")
+lines(x = tset, y = S.simu,
+      lwd = 2, col = "purple")
+# Plot pollen
+lines(x = tset, y = D.simu,
+      lwd = 2, col = "green")
+lines(x = tset, y = E.simu,
+      lwd = 2, col = "orange")
 
 ```
 
-      
+
+
+
+
+
+
