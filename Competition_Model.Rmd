@@ -24,22 +24,23 @@ library(tidyverse)
 ```
 ```{r}
 # Define the parameters
-phi <- # The conversion of pollen to bees
-Ug <-  # The uptake rate of pollen for generalist bees
-Us <-  # The uptake rate of pollen for specialist bees
-hg <-  # The handling time of pollen for generalist (how long to take it back to brood)
-hs <-  # The handling time of pollen for specialist (how long to take it back to brood)
-mg <-   # The mortality of the generalist bees
-ms <- # The mortality of the specialist bees
-rmax_e <- # The maximum reproductive rate potential of the Exotic plant 
-rmax_d <- # The maximum reproductive rate potential of the Native plant
-delta <- # A proportion of YS that makes plants based upon pollen yield
-Ke <- # The carrying capacity of the exotic plants 
-Kd <- # The carrying capacity of the native plants 
-alpha <- # competition coefficient of D’s effect on E
-beta <- # competition coefficient of E’s effect on D
-x <- # required number of pollen grains to have max reproduction. 
-  
+phi <- 100 # The conversion of flowers to pollen 
+Ug <- 1000 # The uptake rate of pollen for generalist bees
+Us <- 2000 # The uptake rate of pollen for specialist bees
+hg <- 10 # The handling time of pollen for generalist (how long to take it back to brood)
+hs <- 10 # The handling time of pollen for specialist (how long to take it back to brood)
+mg <- 0.01  # The mortality of the generalist bees
+ms <- 0.01  # The mortality of the specialist bees
+rmax_e <- 0.05 # The maximum reproductive rate potential of the Exotic plant 
+rmax_d <- 0.05 # The maximum reproductive rate potential of the Native plant
+delta <- 2 # A proportion of YS that makes plants based upon pollen yield
+Ke <- 20000 # The carrying capacity of the exotic plants 
+Kd <- 20000 # The carrying capacity of the native plants 
+alpha <- 0.01 # competition coefficient of D’s effect on E
+beta <- 0.01  # competition coefficient of E’s effect on D
+x <- 10000 # required number of pollen grains to have max reproduction. 
+Yg <- 10000   # The yield conversion of generalist bees to pollen
+Ys <- 10000  # The yield conversion of specialist bees to pollen
 # Define the initial conditions 
 G0 <- 100 # Initial population of generalist bees
 S0 <- 100 # Initial population of specialist bees
@@ -72,17 +73,18 @@ for(i in 2:length(tset)){
   
   # Calc the change in pollen, bees, and plants 
   
-  dN <- (D*phi - ((Ug*N*G + Us*N*S)/(1 + Ug*hg*N + Us*hs*N)))dt
+ 
   
-  dA <- (E*phi - (Ug*A*G/(1 + Ug*hg*A)))dt
+  dG <- ((G(Ug*A + Ug*N))/(1 + Ug*hg*N + Ug*hg*A) - mg*G)*dt
   
-  dG <- ((Ug*N*G/(1 + Ug*hg*N)) +(Ug*A*G/(1 + Ug*hg*A)) - mg*G)dt
+  dS <- ((Us*N*S/(1 + Us*hs*N)) - ms*S)*dt
   
-  dS <- ((Ug*N*S/(1 + Us*hs*N)) - ms*S)dt
+  dE <- ((rmax_e(min(1, G/x))) * ((Ke - E - alpha*D)/Ke))*dt 
   
-  dE <- ((rmax_e(min(1, G/x))) * ((Ke - E - alpha*D)/Ke))dt 
+  dD <- ((rmax_d(min(1, (delta*S + G)/x)))*((Kd - D - beta*E)/Kd))*dt
+   dN <- (D*phi - (1/Yg)*((Ug*N*G)/(1 + Ug*hg*N + Ug*hg*A)) - (1/Ys)*((Us*N*S)/(1 + Us*hs*N)))*dt 
   
-  dD <- ((rmax_d(min(1, (delta*S + G)/x)))*(Kd - D - beta*))
+   dA <- (E*phi - (1/Yg)*(Ug*A*G/(1 + Ug*hg*N + Ug*hg*A)))*dt
   
   
 } # End of for loop
