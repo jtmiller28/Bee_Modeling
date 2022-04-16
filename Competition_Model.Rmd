@@ -25,28 +25,28 @@ library(tidyverse)
 ```{r}
 # Define the parameters
 phi <- 10 # The conversion of flowers to pollen 
-Ug <- 0.01 # The uptake rate of pollen for generalist bees
-Us <- 0.02 # The uptake rate of pollen for specialist bees
-hg <- 0.01 # The handling time of pollen for generalist (how long to take it back to brood)
-hs <- 0.01 # The handling time of pollen for specialist (how long to take it back to brood)
+Ug <- 1000 # The uptake rate of pollen for generalist bees
+Us <- 1000 # The uptake rate of pollen for specialist bees
+hg <- 1 # The handling time of pollen for generalist (how long to take it back to brood)
+hs <- 1 # The handling time of pollen for specialist (how long to take it back to brood)
 mg <- 0.01  # The mortality of the generalist bees
 ms <- 0.01  # The mortality of the specialist bees
 rmax_e <- 0.01 # The maximum reproductive rate potential of the Exotic plant 
 rmax_d <- 0.01 # The maximum reproductive rate potential of the Native plant
 delta <- 2 # A proportion of YS that makes plants based upon pollen yield
-Ke <- 100 # The carrying capacity of the exotic plants 
-Kd <- 100 # The carrying capacity of the native plants 
+Ke <- 5 # The carrying capacity of the exotic plants 
+Kd <- 5 # The carrying capacity of the native plants 
 alpha <- 0.05 # competition coefficient of D’s effect on E
 beta <- 0.05  # competition coefficient of E’s effect on D
-x <- 1000 # required number of pollen grains to have max reproduction. 
-Yg <- 100000000   # The yield conversion of generalist bees to pollen
-Ys <- 100000000  # The yield conversion of specialist bees to pollen
+x <- 100000 # required number of pollen grains to have max reproduction. 
+Yg <- 10   # The yield conversion of generalist bees to pollen
+Ys <- 10  # The yield conversion of specialist bees to pollen
 
 # Define the initial conditions 
-G0 <- 1 # Initial population of generalist bees
-S0 <- 1 # Initial population of specialist bees
-E0 <- 2 # Initial population of Exotic plants
-D0 <- 2 # Initial population of Native plants
+G0 <- 100 # Initial population of generalist bees
+S0 <- 100 # Initial population of specialist bees
+E0 <- 5 # Initial population of Exotic plants
+D0 <- 5 # Initial population of Native plants
 A0 <- E0 * 1/phi # Initial amount of alien pollen
 N0 <- D0 * 1/phi # Initial amount of native pollen 
 ```
@@ -89,8 +89,13 @@ for(i in 2:length(tset)){
 	dS <- (((Us*N*S)/(1+Us*hs*N)) - ms*S)*dt
 	
 	# Calc the plants
-	dE <- (rmax_e*(min(1, G/x)) * ((Ke - E - alpha*D)/Ke))*dt
-	dD <- (rmax_d*(min(1, (delta*S + G)/x))*((Kd - D - beta*E)/Kd))*dt
+	
+	dE <- (rmax_e*(min(1, G/x)) * max(0,((Ke - E - alpha*D)/Ke)))*dt
+	
+	dD <- (rmax_d*(min(1, (delta*S + G)/x))*max(0,((Kd - D - beta*E)/Kd)))*dt
+	
+	### E > 0 ###
+	### D > 0 ###
 	
 	# Calc totals 
 	N.simu[i] <- N + dN
@@ -106,24 +111,85 @@ for(i in 2:length(tset)){
 plot(x = tset, y = N.simu,
      type = 'l', las = 1, lwd = 1, col = "green",
      xlab = "time", ylab="Amount",
-     ylim = c(0, 10000))
+     ylim = c(-100000, 100000))
 lines(x = tset, y = A.simu,
       lwd = 2, col = "yellow")
 # Plot bees
-lines(x = tset, y = G.simu,
-      lwd = 2, col = "blue")
-lines(x = tset, y = S.simu,
-      lwd = 2, col = "purple")
-# Plot pollen
+#lines(x = tset, y = G.simu,
+      #lwd = 2, col = "blue")
+#lines(x = tset, y = S.simu,
+      #lwd = 2, col = "purple")
+# Plot plants
 lines(x = tset, y = D.simu,
       lwd = 2, col = "green")
 lines(x = tset, y = E.simu,
       lwd = 2, col = "orange")
-
+### Current issue is that the implicit competition portion of the equation is driving the values to negative. 
 ```
 
 
 
+#### Taking Holly's advice and figuring out how to model it with only the native plant and specialist pollinator involved to find where things go crazy
+```{r}
+# Lets think about the parameters needed just here
+rmax_d <- 0.05 # The maximum reproductive rate potential of the Native plant
+delta <- 2 # A proportion of YS that makes plants based upon pollen yield
+x <- 100000# required number of pollen grains to have max reproduction.
+Kd <- 200 # The carrying capacity of the native plants
+Us <- 1000 # The uptake rate of pollen for specialist bees
+hs <- 1 # The handling time of pollen for specialist (how long to take it back to brood)
+ms <- 0.01  # The mortality of the specialist bees
+phi <- 100 # The conversion of flowers to pollen 
+Ys <- 10  # The yield conversion of specialist bees to pollen
+
+# Initial Conditions
+D0 <- 100 # Initial population of Native plants
+N0 <- D0 * phi # Intial amount of native pollen in the system
+S0 <- 20
+
+
+# Make the time scale
+tset2 <- seq(from = 0, to = 10000, length.out = 10000)
+
+# Set intial values for the simulation. 
+D.simu2 <- NaN*tset2; D.simu2[1] <- D0
+N.simu2 <- NaN*tset2; N.simu2[1] <- N0
+S.simu2 <- NaN*tset2; S.simu2[1] <- S0
+
+# For each time step
+for(i in 2:length(tset2)){
+  
+  # Calc change in time
+  dt <- tset[i]-tset[i-1]
+  
+  # store placeholder variables
+	D <- D.simu2[i-1]
+  N <- N.simu2[i-1]
+	S <- S.simu2[i-1]
+	
+	# Calc the number of native plants 
+  dD <- ((rmax_d*(min(1, (S*delta)/x)))*D*(1-(D/Kd)))*dt
+  dN <- (D*phi - (1/Ys)*(Us*N*S/(1+Us*hs*N)))*dt
+  dS <- ((Us*N*S/(1+Us*hs*N)) - ms*S)*dt
+  
+  # Calc totals 
+  D.simu2[i] <- D + dD
+	N.simu2[i] <- N + dN
+	S.simu2[i] <- S + dS
+	
+	
+} # End of for loop
+
+plot(x = tset, y = N.simu2,
+     type = 'l', las = 1, lwd = 1, col = "yellow",
+     xlab = "time", ylab="Amount",
+     ylim = c(0, 1000))
+lines(x = tset, y = D.simu2,
+      lwd = 2, col = "green")
+lines(x = tset, y = S.simu2,
+      lwd = 2, col = "purple")
+
+```
 
 
 
