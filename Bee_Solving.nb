@@ -1,0 +1,261 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      9128,        253]
+NotebookOptionsPosition[      7547,        221]
+NotebookOutlinePosition[      7952,        237]
+CellTagsIndexPosition[      7909,        234]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[""], "Input",
+ CellChangeTimes->{{3.85997578536032*^9, 
+  3.859975792108475*^9}},ExpressionUUID->"da577d5b-eb3e-4928-a946-\
+9a798353a09f"],
+
+Cell[TextData[{
+ StyleBox["Bee Specialization Model ", "Title"],
+ "\nFirst set up the basic equations for just native plants and specialist \
+bees\n"
+}], "Text",
+ CellChangeTimes->{{3.8599757979731283`*^9, 3.8599758166606965`*^9}, {
+   3.859976208242556*^9, 3.8599762261081877`*^9}, 
+   3.859985385470338*^9},ExpressionUUID->"a7e5a562-3d8e-466e-b641-\
+bbafa7d9bb79"],
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"NativePlant", "[", "D_", "]"}], ":=", 
+    RowBox[{"rmax", "*", "D", "*", 
+     RowBox[{"(", 
+      RowBox[{"1", "-", 
+       RowBox[{"(", 
+        RowBox[{"D", "/", "Kd"}], ")"}]}], ")"}]}]}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"NativePollen", "[", "N_", "]"}], ":=", " ", 
+    RowBox[{
+     RowBox[{"D", "*", "phi"}], " ", "-", " ", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"1", "/", "Ys"}], ")"}], "*", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"Us", "*", "N", "*", "S"}], ")"}], "/", 
+        RowBox[{"(", 
+         RowBox[{"1", "+", 
+          RowBox[{"Us", "*", "hs", "*", "N"}]}], ")"}]}], ")"}]}]}]}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"SpecialistBee", "[", "S_", "]"}], ":=", " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"Us", "*", "N", "*", "S"}], ")"}], "/", 
+        RowBox[{"(", 
+         RowBox[{"1", "+", 
+          RowBox[{"Us", "*", "hs", "*", "N"}]}], ")"}]}], ")"}], " ", "-", 
+      " ", 
+      RowBox[{"ms", "*", "S"}]}], ")"}]}]}]}]], "Input",
+ CellChangeTimes->{{3.859975824705295*^9, 3.8599758258060665`*^9}, {
+  3.859975966100556*^9, 3.8599759668532286`*^9}, {3.859976011864554*^9, 
+  3.8599760127312374`*^9}, {3.8599760431802254`*^9, 3.8599763547624826`*^9}, {
+  3.8599852438882475`*^9, 3.859985252461589*^9}, {3.859985307186993*^9, 
+  3.8599853121303487`*^9}},
+ CellLabel->"In[52]:=",ExpressionUUID->"c4e205f3-77d7-4a0a-ae18-9edaafe2030d"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[StyleBox["Solving For Equilibria", "Subtitle"]], "Title",
+ CellChangeTimes->{{3.8599853634966154`*^9, 
+  3.859985370937975*^9}},ExpressionUUID->"e9363ad0-8535-4978-ba08-\
+61487255ecce"],
+
+Cell["First for Native Plant", "Text",
+ CellChangeTimes->{{3.859976373305462*^9, 3.8599763784185743`*^9}, {
+  3.8599764782264805`*^9, 3.8599764818893857`*^9}, {3.8599853346213307`*^9, 
+  3.859985348261026*^9}, {3.8599854274733133`*^9, 
+  3.8599854293187237`*^9}},ExpressionUUID->"994d30cf-a9fc-41a5-8e5b-\
+ff9cc7a950a6"],
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", 
+  RowBox[{"rmax", ",", " ", "Kd"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Solve", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"NativePlant", "[", "D", "]"}], "\[Equal]", "D"}], ",", "D"}], 
+  "]"}]}], "Input",
+ CellChangeTimes->{{3.8599764851221867`*^9, 3.8599764975250664`*^9}, {
+  3.859976528053497*^9, 3.859976529489482*^9}, {3.8599846930972257`*^9, 
+  3.859984733739987*^9}, {3.859984765464882*^9, 3.859984765964344*^9}, {
+  3.859984840464347*^9, 3.859984889109635*^9}, {3.859985170378846*^9, 
+  3.8599851790151806`*^9}, {3.8599852125381403`*^9, 3.859985325832692*^9}},
+ CellLabel->"In[55]:=",ExpressionUUID->"f5bb48c2-91a1-402a-b714-48cfec7fcc44"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"D", "\[Rule]", "0"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"D", "\[Rule]", 
+      FractionBox[
+       RowBox[{"Kd", " ", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"-", "1"}], "+", "rmax"}], ")"}]}], "rmax"]}], "}"}]}], 
+   "}"}], "\[IndentingNewLine]"}]], "Input",
+ CellChangeTimes->{{3.8599854334121857`*^9, 
+  3.859985433413185*^9}},ExpressionUUID->"051d9841-6200-4fcf-9e0d-\
+691498a3ee0b"],
+
+Cell["For Native Pollen", "Text",
+ CellChangeTimes->{{3.859985444403392*^9, 3.859985483578409*^9}, 
+   3.8599855744532614`*^9},ExpressionUUID->"8879d854-2cd6-41f2-b385-\
+3cac10f31940"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", 
+  RowBox[{"phi", ",", " ", "Ys", ",", " ", "Us", ",", " ", "hs"}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Solve", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"NativePollen", "[", "N", "]"}], " ", "==", " ", "N"}], ",", " ", 
+   "N"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.8599854939393015`*^9, 
+  3.859985568798378*^9}},ExpressionUUID->"1cea3851-6051-43ca-ab73-\
+e28a0b92c57b"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"N", "\[Rule]", 
+     RowBox[{"-", 
+      FractionBox[
+       RowBox[{
+        RowBox[{"S", " ", "Us"}], "+", "Ys", "-", 
+        RowBox[{"D", " ", "hs", " ", "phi", " ", "Us", " ", "Ys"}], "-", 
+        SqrtBox[
+         RowBox[{
+          RowBox[{"4", " ", "D", " ", "hs", " ", "phi", " ", "Us", " ", 
+           SuperscriptBox["Ys", "2"]}], "+", 
+          SuperscriptBox[
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"-", "S"}], " ", "Us"}], "-", "Ys", "+", 
+             RowBox[{"D", " ", "hs", " ", "phi", " ", "Us", " ", "Ys"}]}], 
+            ")"}], "2"]}]]}], 
+       RowBox[{"2", " ", "hs", " ", "Us", " ", "Ys"}]]}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"N", "\[Rule]", 
+     RowBox[{"-", 
+      FractionBox[
+       RowBox[{
+        RowBox[{"S", " ", "Us"}], "+", "Ys", "-", 
+        RowBox[{"D", " ", "hs", " ", "phi", " ", "Us", " ", "Ys"}], "+", 
+        SqrtBox[
+         RowBox[{
+          RowBox[{"4", " ", "D", " ", "hs", " ", "phi", " ", "Us", " ", 
+           SuperscriptBox["Ys", "2"]}], "+", 
+          SuperscriptBox[
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"-", "S"}], " ", "Us"}], "-", "Ys", "+", 
+             RowBox[{"D", " ", "hs", " ", "phi", " ", "Us", " ", "Ys"}]}], 
+            ")"}], "2"]}]]}], 
+       RowBox[{"2", " ", "hs", " ", "Us", " ", "Ys"}]]}]}], "}"}]}], 
+  "}"}]], "Output",
+ CellChangeTimes->{3.8599855435308323`*^9},
+ CellLabel->"Out[59]=",ExpressionUUID->"d32908d4-dc56-4a45-b01d-a349f26133d0"]
+}, Open  ]],
+
+Cell["For Specialist Bee", "Text",
+ CellChangeTimes->{{3.859985581534271*^9, 
+  3.859985591645884*^9}},ExpressionUUID->"d6cc7a1d-1407-4c19-9c24-\
+6e7c7be1e389"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Clear", "[", "ms", "]"}], "\[IndentingNewLine]", 
+   RowBox[{"Solve", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"SpecialistBee", "[", "S", "]"}], "==", "S"}], ",", " ", "S"}], 
+    "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.8599855939424863`*^9, 3.8599856377932324`*^9}},
+ CellLabel->"In[60]:=",ExpressionUUID->"b3641d2a-7783-4a1d-bf12-9362f9a07a49"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"{", 
+   RowBox[{"S", "\[Rule]", "0"}], "}"}], "}"}]], "Output",
+ CellChangeTimes->{3.8599856401188726`*^9},
+ CellLabel->"Out[61]=",ExpressionUUID->"38b34484-ade7-4ce3-b40d-9a270f7b344f"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{960, 491},
+WindowMargins->{{-4.5, Automatic}, {Automatic, -4.5}},
+FrontEndVersion->"13.0 for Microsoft Windows (64-bit) (February 4, 2022)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"50a92b8f-629d-4cbe-b9eb-f4e1f09c411b"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 151, 3, 28, "Input",ExpressionUUID->"da577d5b-eb3e-4928-a946-9a798353a09f"],
+Cell[712, 25, 366, 8, 119, "Text",ExpressionUUID->"a7e5a562-3d8e-466e-b641-bbafa7d9bb79"],
+Cell[1081, 35, 1591, 43, 86, "Input",ExpressionUUID->"c4e205f3-77d7-4a0a-ae18-9edaafe2030d"],
+Cell[CellGroupData[{
+Cell[2697, 82, 199, 3, 71, "Title",ExpressionUUID->"e9363ad0-8535-4978-ba08-61487255ecce"],
+Cell[2899, 87, 320, 5, 35, "Text",ExpressionUUID->"994d30cf-a9fc-41a5-8e5b-ff9cc7a950a6"],
+Cell[3222, 94, 691, 13, 48, "Input",ExpressionUUID->"f5bb48c2-91a1-402a-b714-48cfec7fcc44"],
+Cell[3916, 109, 500, 16, 66, InheritFromParent,ExpressionUUID->"051d9841-6200-4fcf-9e0d-691498a3ee0b"],
+Cell[4419, 127, 184, 3, 35, "Text",ExpressionUUID->"8879d854-2cd6-41f2-b385-3cac10f31940"],
+Cell[CellGroupData[{
+Cell[4628, 134, 421, 11, 48, "Input",ExpressionUUID->"1cea3851-6051-43ca-ab73-e28a0b92c57b"],
+Cell[5052, 147, 1613, 43, 97, "Output",ExpressionUUID->"d32908d4-dc56-4a45-b01d-a349f26133d0"]
+}, Open  ]],
+Cell[6680, 193, 160, 3, 35, "Text",ExpressionUUID->"d6cc7a1d-1407-4c19-9c24-6e7c7be1e389"],
+Cell[CellGroupData[{
+Cell[6865, 200, 425, 10, 67, "Input",ExpressionUUID->"b3641d2a-7783-4a1d-bf12-9362f9a07a49"],
+Cell[7293, 212, 226, 5, 32, "Output",ExpressionUUID->"38b34484-ade7-4ce3-b40d-9a270f7b344f"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
