@@ -1,0 +1,13 @@
+---
+title: "Model_ODEs"
+author: "JT Miller"
+date: "5/17/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### This Markdown is built to solve the ODEs for the bee model using tools I've learned in EEMB 247 Quantitative Biology
+
