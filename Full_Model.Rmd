@@ -1,0 +1,197 @@
+---
+title: "Full_model"
+author: "JT Miller"
+date: "5/26/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(deSolve)
+library(rootSolve)
+```
+
+### The model 
+
+```{r}
+Full.Bee.Model <- function(t,x,params){
+  
+  # State Variables
+  N = x[1]
+  A = x[2]
+  G = x[3]
+  S = x[4]
+  D = x[5]
+  E = x[6]
+  # Parameters
+  phi = params[1]
+  Ys = params[2]
+  Yg = params[3]
+  Us = params[4]
+  Ug = params[5]
+  hs = params[6]
+  hg = params[7]
+  ms = params[8]
+  mg = params[9]
+  Kd = params[10]
+  Ke = params[11]
+  delta = params[12]
+  alpha = params[13]
+  beta = params[14]
+  xreq = params[15]
+  r = params[16]
+  # Setting up the equations 
+  
+  dNdt = D*phi - (1/Ys)*((Us*N*S)/(1+Us*hs*N)) - (1/Yg)*((Ug*N*G)/(1+Ug*hg*N + Ug*hg*A))
+  
+  dAdt = E*phi - (1/Yg)*((Ug*A*G)/(1+Ug*hg*N+Ug*hg*A))
+  
+  dGdt = (G*((Ug*A+Ug*N)/(1+Ug*hg*N+Ug*hg*A))) - mg*G
+  
+  dSdt = (S*((Us*N)/(1+Us*hs*N))) - ms*S
+  
+  dDdt = (r*(((S*delta + G)/xreq)/(1 + ((S*delta + G)/xreq))))*D*((Kd-D-beta*E)/Kd)
+  
+  dEdt = (r*(((G)/xreq)/(1 + ((G)/xreq))))*D*((Ke-E-alpha*D)/Ke)
+  
+  # Return the output
+  return(list(c(dNdt, dAdt, dGdt, dSdt, dDdt, dEdt)))
+}
+```
+
+```{r}
+### Setting up the parameters
+phi = 100
+Ys = 0.1
+Yg = 0.05
+Us = 0.1
+Ug = 0.05
+hs = 1
+hg = 1 
+ms = 0.1
+mg = 0.1
+Kd = 10000
+Ke = 10000
+delta = 2 
+alpha = 0.1
+beta = 0.1
+xreq = 100
+r = 0.05
+
+parameters = c(phi, Ys, Yg, Us, Ug, hs, hg, ms, mg, Kd, Ke, delta, alpha, beta, xreq, r)
+
+### Initial State Variable Values
+N0 = 10
+A0 = 10
+G0 = 1
+S0 = 1
+D0 = 0
+E0 = 100
+
+initial_values = c(N0, A0, G0, S0, D0, E0)
+
+# Set up the time
+times <- seq(0, 200, by = 1) 
+```
+
+```{r}
+Full.Bee.Model(times, initial_values, parameters)
+
+results = lsoda(initial_values, times, Full.Bee.Model, parameters)
+
+colnames(results) = c("time", "N", "A","G", "S", "D", "E")
+
+results
+```
+```{r}
+# Plotting out the results
+# Plotting in base plot
+plot(results[, "time"], results[, "N"], type="l", col="orange",  
+     xlab="time", ylab="Quantity",ylim=c(0, max(results[, "G"]) + 100)) 
+lines(results[, "time"], results[, "A"], type="l", col="red")  
+lines(results[, "time"], results[, "G"], type="l", col="purple")
+lines(results[, "time"], results[, "S"], type="l", col="blue")
+lines(results[, "time"], results[, "D"], type="l", col="brown")
+lines(results[, "time"], results[, "E"], type="l", col="green")
+
+legend("topright", legend=c("N", "A", "G", "S", "D", "E"), fill=c("orange", "red", "purple", "blue", "brown", "green"))
+```
+### Using multiroot to solve for the equilibria 
+```{r}
+# The function used by multiroot to calculate
+
+
+Bee.equils <- function(x,params){
+  
+  # State Variables
+  N = x[1]
+  A = x[2]
+  G = x[3]
+  S = x[4]
+  D = x[5]
+  E = x[6]
+  # Parameters
+  phi = params[1]
+  Ys = params[2]
+  Yg = params[3]
+  Us = params[4]
+  Ug = params[5]
+  hs = params[6]
+  hg = params[7]
+  ms = params[8]
+  mg = params[9]
+  Kd = params[10]
+  Ke = params[11]
+  delta = params[12]
+  alpha = params[13]
+  beta = params[14]
+  xreq = params[15]
+  r = params[16]
+  # Setting up the equations 
+  
+  c(F1 = D*phi - (1/Ys)*((Us*N*S)/(1+Us*hs*N)) - (1/Yg)*((Ug*N*G)/(1+Ug*hg*N + Ug*hg*A)),
+  
+  F2 = E*phi - (1/Yg)*((Ug*A*G)/(1+Ug*hg*N+Ug*hg*A)),
+  
+  F3 = (G*((Ug*A+Ug*N)/(1+Ug*hg*N+Ug*hg*A))) - mg*G,
+  
+  F4 = (S*((Us*N)/(1+Us*hs*N))) - ms*S,
+  
+  F5 = (r*(((S*delta + G)/xreq)/(1 + ((S*delta + G)/xreq))))*D*((Kd-D-beta*E)/Kd),
+  
+  F6 = (r*(((G)/xreq)/(1 + ((G)/xreq))))*D*((Ke-E-alpha*D)/Ke))
+
+}
+
+
+# Initial Values
+x <- c(N0 = 10,A0 = 10,G0 = 1,S0 = 1,D0 = 100,E0 = 100)
+
+#call multiroot
+eqm = multiroot(Bee.equils, x, parms = parameters)
+
+#the equilibrium values are stored in the root part of eqm
+eqm$root
+
+# Numerically Calculate the Jacobian matrix at the equilibrium. 
+JAC = jacobian.full(y=c(eqm$root), func = Full.Bee.Model, parms = parameters)
+JAC
+```
+```{r}
+# Calculating the Eigen Values 
+eigs = eigen(JAC)
+eigs
+```
+# We have imaginary and non-negative equilibriums, oh joy
+
+
+```{r}
+# Calculating the maximum real parts of the eigenvalues
+max(Re(eigs$values))
+```
+
+
+
